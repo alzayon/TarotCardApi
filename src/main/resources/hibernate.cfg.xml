@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- <!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        " http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd"> -->
+<!DOCTYPE hibernate-configuration SYSTEM
+        "classpath://org/hibernate/hibernate-configuration-3.0.dtd">
+
+<!-- https://stackoverflow.com/questions/18717038/adding-resources-in-intellij-for-java-project -->
+<!-- http://www.topjavatutorial.com/frameworks/hibernate/adding-hibernate-dao-layer-in-existing-maven-project/ -->
+
+<hibernate-configuration>
+    <!-- Dont include the name in the session factory if you do not use JNDI -->
+    <!-- https://stackoverflow.com/questions/6293052/hibernate-javax-naming-noinitialcontextexception-component-mapping-via-annotat -->
+    <!-- <session-factory name="hibernateSessionFactory"> -->
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.password">secretive</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/tarotapp</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+
+        <!-- https://stackoverflow.com/questions/27170089/transaction-management-in-hibernate-with-dao-design-pattern -->
+        <property name="hibernate.current_session_context_class">thread</property>
+
+        <!--   <property name="hibernate.hbm2ddl.auto">create</property> -->
+
+        <mapping class="com.alexis.tarotapp.api.entities.Card"/>
+        <mapping class="com.alexis.tarotapp.api.entities.Meaning"/>
+        <mapping class="com.alexis.tarotapp.api.entities.Category"/>
+
+    </session-factory>
+</hibernate-configuration>
