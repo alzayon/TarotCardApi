@@ -1,10 +1,10 @@
 package com.alexis.tarotapp.api.service;
 
-import com.alexis.tarotapp.api.dto.CategoryDto;
-import com.alexis.tarotapp.api.entities.Category;
+import com.alexis.tarotapp.api.dto.ReadingDto;
+import com.alexis.tarotapp.api.entities.Reading;
 import com.alexis.tarotapp.api.entities.helper.EntityHelper;
 import com.alexis.tarotapp.api.general.result.Result;
-import com.alexis.tarotapp.api.repository.ICategoryDao;
+import com.alexis.tarotapp.api.repository.IReadingDao;
 import com.alexis.tarotapp.api.repository.hibernate.SessionUtil;
 import com.alexis.tarotapp.api.unitofwork.HIbernateUnitOfWork;
 import com.alexis.tarotapp.api.unitofwork.IUnitOfWork;
@@ -12,35 +12,34 @@ import org.hibernate.Session;
 
 import java.util.List;
 
-public class CategoryService implements ICategoryService {
+public class ReadingService implements IReadingService {
+    private final IReadingDao readingDao;
 
-    private final ICategoryDao categoryDao;
-
-    public CategoryService(ICategoryDao categoryDao) {
-        this.categoryDao = categoryDao;
+    public ReadingService(IReadingDao readingDao) {
+        this.readingDao = readingDao;
     }
 
     @Override
-    public Result<Category> add(CategoryDto categoryDto) {
+    public Result<Reading> add(ReadingDto readingDto) {
         final Session session = SessionUtil.getSession();
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
-        final Category category = EntityHelper.toEntity(session, categoryDto);
-        final Result<Category> result = categoryDao.add(session, category);
+        final Reading reading = EntityHelper.toEntity(session, readingDto);
+        final Result<Reading> result = readingDao.add(session, reading);
         unitOfWork.commit();
 
         return result;
     }
 
     @Override
-    public Result<Category> update(CategoryDto categoryDto) {
+    public Result<Reading> update(ReadingDto readingDto) {
         final Session session = SessionUtil.getSession();
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
-        final Category category = EntityHelper.toEntity(session, categoryDto);
-        final Result<Category> result = categoryDao.update(session, category);
+        final Reading reading = EntityHelper.toEntity(session, readingDto);
+        final Result<Reading> result = readingDao.update(session, reading);
         unitOfWork.commit();
 
         return result;
@@ -52,31 +51,31 @@ public class CategoryService implements ICategoryService {
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
-        final Result<Boolean> result = categoryDao.delete(session, id);
+        final Result<Boolean> result = readingDao.delete(session, id);
         unitOfWork.commit();
 
         return result;
     }
 
     @Override
-    public Result<List<Category>> list() {
+    public Result<List<Reading>> list() {
         final Session session = SessionUtil.getSession();
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
-        final Result<List<Category>> result = categoryDao.list(session);
+        final Result<List<Reading>> result = readingDao.list(session);
         unitOfWork.commit();
 
         return result;
     }
 
     @Override
-    public Result<Category> fetch(int id) {
+    public Result<Reading> fetch(int id) {
         final Session session = SessionUtil.getSession();
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
-        final Result<Category> result = categoryDao.fetch(session, id);
+        final Result<Reading> result = readingDao.fetch(session, id);
         unitOfWork.commit();
 
         return result;

@@ -15,20 +15,14 @@ public class MeaningDao implements IMeaningDao {
 
     @Override
     public Result<Meaning> add(Session session, Meaning meaning) {
-        final Transaction tx = session.beginTransaction();
         session.save(meaning);
-        tx.commit();
-        session.close();
         return new Result<>(meaning);
     }
 
     @Override
     public Result<Meaning> update(Session session, Meaning meaning) {
-        final Transaction tx = session.beginTransaction();
         final Meaning reattachedMeaning = (Meaning)session.merge(meaning);
         session.save(reattachedMeaning);
-        tx.commit();
-        session.close();
         return new Result<>(reattachedMeaning);
     }
 
@@ -51,14 +45,11 @@ public class MeaningDao implements IMeaningDao {
         //http://www.codejava.net/frameworks/hibernate/hibernate-basics-3-ways-to-delete-an-entity-from-the-datastore
         //https://www.mkyong.com/hibernate/hibernate-cascade-example-save-update-delete-and-delete-orphan/
         final Meaning meaning = (Meaning) session.get(Meaning.class, id);
-        final Transaction tx = session.beginTransaction();
         boolean outcome = false;
         if (meaning != null) {
             session.delete(meaning);
-            tx.commit();
             outcome = true;
         }
-        session.close();
         return new Result<>(outcome);
     }
 }

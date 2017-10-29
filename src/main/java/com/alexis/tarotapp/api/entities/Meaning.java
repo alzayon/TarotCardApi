@@ -28,6 +28,13 @@ public class Meaning {
     public Meaning() {
     }
 
+    public Meaning(int id, Card card, Category category, String meaningText) {
+        this.id = id;
+        this.card = card;
+        this.category = category;
+        this.meaningText = meaningText;
+    }
+
     public int getId() {
         return id;
     }

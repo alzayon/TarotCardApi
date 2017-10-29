@@ -1,18 +1,41 @@
 package com.alexis.tarotapp.api.entities;
 
+import javax.persistence.*;
+
 /**
  * Created by alzayon on 6/16/2017.
  */
 public class Reading {
 
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private final long id;
 
+    //http://viralpatel.net/blogs/hibernate-one-to-many-annotation-tutorial/
+    @ManyToOne
+    @JoinColumn(name = "meaning_id")
+    private final Meaning meaning;
 
-    private TarotSession tarotSession;
+    //http://viralpatel.net/blogs/hibernate-one-to-many-annotation-tutorial/
+    @ManyToOne
+    @JoinColumn(name = "spread_component_id")
+    private final SpreadComponent spreadComponent;
 
+    public Reading(long id, Meaning meaning, SpreadComponent spreadComponent) {
+        this.id = id;
+        this.meaning = meaning;
+        this.spreadComponent = spreadComponent;
+    }
 
-    private Meaning meaning;
+    public long getId() {
+        return id;
+    }
 
+    public Meaning getMeaning() {
+        return meaning;
+    }
 
-    private int position;
+    public SpreadComponent getSpreadComponent() {
+        return spreadComponent;
+    }
 }

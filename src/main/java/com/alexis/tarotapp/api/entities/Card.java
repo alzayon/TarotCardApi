@@ -13,6 +13,12 @@ public class Card {
     public Card() {
     }
 
+    public Card(int id, String name, int type) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

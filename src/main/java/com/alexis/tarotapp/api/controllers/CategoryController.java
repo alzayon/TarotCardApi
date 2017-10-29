@@ -1,11 +1,9 @@
 package com.alexis.tarotapp.api.controllers;
 
 import com.alexis.tarotapp.api.dto.CategoryDto;
-import com.alexis.tarotapp.api.dto.DtoHelper;
+import com.alexis.tarotapp.api.dto.helper.DtoHelper;
 import com.alexis.tarotapp.api.entities.Category;
 import com.alexis.tarotapp.api.general.patch.PATCH;
-import com.alexis.tarotapp.api.repository.ICategoryDao;
-import com.alexis.tarotapp.api.repository.hibernate.SessionUtil;
 import com.alexis.tarotapp.api.general.result.Result;
 import com.alexis.tarotapp.api.service.ICategoryService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import org.glassfish.jersey.server.ManagedAsync;
-import org.hibernate.Session;
 
 import javax.ws.rs.*;
 import javax.ws.rs.container.AsyncResponse;
@@ -41,9 +38,9 @@ public class CategoryController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response add(Category category) {
+    public Response add(CategoryDto categoryDto) {
         //https://stackoverflow.com/questions/23858488/how-i-return-http-404-json-xml-response-in-jax-rs-jersey-on-tomcat
-        final Result<Category> result = categoryService.add(category);
+        final Result<Category> result = categoryService.add(categoryDto);
         return Response.ok(DtoHelper.toDto(result.getItem())).build();
     }
 
@@ -51,8 +48,8 @@ public class CategoryController {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") final int id, final Category category) {
-        if (category.getId() != id) {
+    public Response update(@PathParam("id") int id, CategoryDto categoryDto) {
+        if (categoryDto.getId() != id) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .header("Error", "The category id does not match the resource path")
                     .build();
@@ -61,7 +58,7 @@ public class CategoryController {
         final Result<Category> resultCategory = categoryService.fetch(id);
 
         if (!resultCategory.empty()) {
-            final Result<Category> result = categoryService.update(category);
+            final Result<Category> result = categoryService.update(categoryDto);
             return Response.ok(DtoHelper.toDto(result.getItem())).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -92,9 +89,9 @@ public class CategoryController {
                 final JsonNode appliedJsonNode = document.apply(jsonNode);
 
                 //https://stackoverflow.com/questions/19711695/convert-jsonnode-into-pojo
-                final Category category = objectMapper.treeToValue(appliedJsonNode, Category.class);
+                final CategoryDto categoryDto = objectMapper.treeToValue(appliedJsonNode, CategoryDto.class);
 
-                final Result<Category> result = categoryService.update(category);
+                final Result<Category> result = categoryService.update(categoryDto);
 
                 return Response.ok(DtoHelper.toDto(result.getItem())).build();
 
@@ -116,7 +113,7 @@ public class CategoryController {
         final Result<Category> resultCategory = categoryService.fetch(id);
 
         if (!resultCategory.empty()) {
-            final Result<Boolean> result = categoryService.delete(resultCategory.getItem());
+            final Result<Boolean> result = categoryService.delete(id);
             if (result.getItem()) {
                 return Response.noContent().build();
             } else {
@@ -128,9 +125,8 @@ public class CategoryController {
     }
 
     @GET
-    @ManagedAsync
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get(@Suspended final AsyncResponse response) {
+    public Response get() {
         final Result<List<Category>> result = categoryService.list();
         final List<CategoryDto> categories = result.getItem().stream()
                 .map(DtoHelper::toDto)

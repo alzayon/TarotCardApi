@@ -1,23 +1,17 @@
 package com.alexis.tarotapp.api.controllers;
 
 import com.alexis.tarotapp.api.dto.CardDto;
-import com.alexis.tarotapp.api.dto.DtoHelper;
+import com.alexis.tarotapp.api.dto.helper.DtoHelper;
 import com.alexis.tarotapp.api.entities.Card;
 import com.alexis.tarotapp.api.general.patch.PATCH;
-import com.alexis.tarotapp.api.repository.ICardDao;
-import com.alexis.tarotapp.api.repository.hibernate.SessionUtil;
 import com.alexis.tarotapp.api.general.result.Result;
 import com.alexis.tarotapp.api.service.ICardService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
-import org.glassfish.jersey.server.ManagedAsync;
-import org.hibernate.Session;
 
 import javax.ws.rs.*;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
@@ -41,9 +35,9 @@ public class CardController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response add(Card card) {
+    public Response add(CardDto cardDto) {
         //https://stackoverflow.com/questions/23858488/how-i-return-http-404-json-xml-response-in-jax-rs-jersey-on-tomcat
-        final Result<Card> result = cardService.add(card);
+        final Result<Card> result = cardService.add(cardDto);
         return Response.ok(DtoHelper.toDto(result.getItem())).build();
     }
 
@@ -51,8 +45,8 @@ public class CardController {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") final int id, final Card card) {
-        if (card.getId() != id) {
+    public Response update(@PathParam("id") final int id, final CardDto cardDto) {
+        if (cardDto.getId() != id) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .header("Error", "The card id does not match the resource path")
                     .build();
@@ -61,7 +55,7 @@ public class CardController {
         final Result<Card> resultCard = cardService.fetch(id);
 
         if (!resultCard.empty()) {
-            final Result<Card> result = cardService.update(card);
+            final Result<Card> result = cardService.update(cardDto);
             return Response.ok(DtoHelper.toDto(result.getItem())).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -92,9 +86,9 @@ public class CardController {
                 final JsonNode appliedJsonNode = document.apply(jsonNode);
 
                 //https://stackoverflow.com/questions/19711695/convert-jsonnode-into-pojo
-                final Card card = objectMapper.treeToValue(appliedJsonNode, Card.class);
+                final CardDto cardDto = objectMapper.treeToValue(appliedJsonNode, CardDto.class);
 
-                final Result<Card> result = cardService.update(card);
+                final Result<Card> result = cardService.update(cardDto);
 
                 return Response.ok(DtoHelper.toDto(result.getItem())).build();
 
@@ -114,7 +108,7 @@ public class CardController {
         final Result<Card> resultCard = cardService.fetch(id);
 
         if (!resultCard.empty()) {
-            final Result<Boolean> result = cardService.delete(resultCard.getItem());
+            final Result<Boolean> result = cardService.delete(id);
             if (result.getItem()) {
                 return Response.noContent().build();
             } else {

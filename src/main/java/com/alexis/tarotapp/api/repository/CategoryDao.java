@@ -15,21 +15,15 @@ public class CategoryDao implements ICategoryDao {
 
     @Override
     public Result<Category> add(Session session, Category category) {
-        final Transaction tx = session.beginTransaction();
         session.save(category);
-        tx.commit();
-        session.close();
         return new Result<>(category);
     }
 
 
     @Override
     public Result<Category> update(Session session, Category category) {
-        final Transaction tx = session.beginTransaction();
         final Category reattachedCategory = (Category)session.merge(category);
         session.save(reattachedCategory);
-        tx.commit();
-        session.close();
         return new Result<>(reattachedCategory);
     }
 
@@ -48,18 +42,15 @@ public class CategoryDao implements ICategoryDao {
     }
 
     @Override
-    public Result<Boolean> delete(final Session session, final int id) {
+    public Result<Boolean> delete(Session session, int id) {
         //http://www.codejava.net/frameworks/hibernate/hibernate-basics-3-ways-to-delete-an-entity-from-the-datastore
         //https://www.mkyong.com/hibernate/hibernate-cascade-example-save-update-delete-and-delete-orphan/
         final Category category = (Category) session.get(Category.class, id);
-        final Transaction tx = session.beginTransaction();
         boolean outcome = false;
         if (category != null) {
             session.delete(category);
-            tx.commit();
             outcome = true;
         }
-        session.close();
         return new Result<>(outcome);
     }
 }

@@ -1,6 +1,8 @@
 package com.alexis.tarotapp.api.service;
 
+import com.alexis.tarotapp.api.dto.MeaningDto;
 import com.alexis.tarotapp.api.entities.Meaning;
+import com.alexis.tarotapp.api.entities.helper.EntityHelper;
 import com.alexis.tarotapp.api.general.result.Result;
 import com.alexis.tarotapp.api.repository.IMeaningDao;
 import com.alexis.tarotapp.api.repository.hibernate.SessionUtil;
@@ -18,11 +20,12 @@ public class MeaningService implements IMeaningService {
     }
 
     @Override
-    public Result<Meaning> add(Meaning meaning) {
+    public Result<Meaning> add(MeaningDto meaningDto) {
         final Session session = SessionUtil.getSession();
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
+        final Meaning meaning = EntityHelper.toEntity(session, meaningDto);
         final Result<Meaning> result = meaningDao.add(session, meaning);
         unitOfWork.commit();
 
@@ -30,11 +33,12 @@ public class MeaningService implements IMeaningService {
     }
 
     @Override
-    public Result<Meaning> update(Meaning meaning) {
+    public Result<Meaning> update(MeaningDto meaningDto) {
         final Session session = SessionUtil.getSession();
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
+        final Meaning meaning = EntityHelper.toEntity(session, meaningDto);
         final Result<Meaning> result = meaningDao.update(session, meaning);
         unitOfWork.commit();
 
@@ -42,12 +46,12 @@ public class MeaningService implements IMeaningService {
     }
 
     @Override
-    public Result<Boolean> delete(Meaning meaning) {
+    public Result<Boolean> delete(int id) {
         final Session session = SessionUtil.getSession();
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
-        final Result<Boolean> result = meaningDao.delete(session, meaning.getId());
+        final Result<Boolean> result = meaningDao.delete(session, id);
         unitOfWork.commit();
 
         return result;

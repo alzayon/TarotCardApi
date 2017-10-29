@@ -9,11 +9,19 @@ import javax.persistence.*;
 @Table(name = "spreads")
 public class Spread {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column
     private String name;
 
     public Spread() {
+    }
+
+    public Spread(int id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public int getId() {

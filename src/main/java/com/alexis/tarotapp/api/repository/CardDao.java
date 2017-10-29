@@ -2,6 +2,7 @@ package com.alexis.tarotapp.api.repository;
 
 import com.alexis.tarotapp.api.entities.Card;
 import com.alexis.tarotapp.api.general.result.Result;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -15,18 +16,25 @@ public class CardDao implements ICardDao {
 
     @Override
     public Result<Card> add(Session session, Card card) {
-        session.save(card);
-        return new Result<>(card);
+        try {
+            session.save(card);
+            return new Result<>(card);
+        } catch (HibernateException ex) {
+            final Result<Card> result =  new Result<>(null, ex);
+            return result;
+        }
     }
 
     @Override
     public Result<Card> update(Session session, Card card) {
-        final Transaction tx = session.beginTransaction();
-        final Card reattachedCard = (Card)session.merge(card);
-        session.save(reattachedCard);
-        tx.commit();
-        session.close();
-        return new Result<>(reattachedCard);
+        try {
+            final Card reattachedCard = (Card)session.merge(card);
+            session.save(reattachedCard);
+            return new Result<>(reattachedCard);
+        } catch (HibernateException ex) {
+            final Result<Card> result =  new Result<>(null, ex);
+            return result;
+        }
     }
 
     @Override
@@ -45,15 +53,17 @@ public class CardDao implements ICardDao {
 
     @Override
     public Result<Boolean> delete(Session session, int id) {
-        final Card card = (Card) session.get(Card.class, id);
-        final Transaction tx = session.beginTransaction();
-        boolean outcome = false;
-        if (card != null) {
-            session.delete(card);
-            tx.commit();
-            outcome = true;
+        try {
+            final Card card = (Card) session.get(Card.class, id);
+            boolean outcome = false;
+            if (card != null) {
+                session.delete(card);
+                outcome = true;
+            }
+            return new Result<>(outcome);
+        } catch (HibernateException ex) {
+            final Result<Boolean> result =  new Result<>(false, ex);
+            return result;
         }
-        session.close();
-        return new Result<>(outcome);
     }
 }

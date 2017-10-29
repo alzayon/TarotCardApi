@@ -1,12 +1,11 @@
 package com.alexis.tarotapp.api.controllers;
 
-import com.alexis.tarotapp.api.dto.ReadingDto;
+import com.alexis.tarotapp.api.dto.SpreadComponentDto;
 import com.alexis.tarotapp.api.dto.helper.DtoHelper;
-import com.alexis.tarotapp.api.entities.Reading;
+import com.alexis.tarotapp.api.entities.SpreadComponent;
 import com.alexis.tarotapp.api.general.patch.PATCH;
 import com.alexis.tarotapp.api.general.result.Result;
-import com.alexis.tarotapp.api.service.IReadingService;
-import com.alexis.tarotapp.api.service.IReadingService;
+import com.alexis.tarotapp.api.service.ISpreadComponentService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
@@ -18,28 +17,23 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by alzayon on 6/18/2017.
- */
-@Path("readingresource")
-public class ReadingController {
-
+@Path("spreadcomponentresource")
+public class SpreadComponentController {
     @Context
     Request request;
 
     @Context
-    IReadingService meaningService;
+    ISpreadComponentService spreadComponentService;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response add(ReadingDto meaning) {
+    public Response add(SpreadComponentDto spreadComponent) {
         //https://stackoverflow.com/questions/23858488/how-i-return-http-404-json-xml-response-in-jax-rs-jersey-on-tomcat
-        final Result<Reading> result = meaningService.add(meaning);
+        final Result<SpreadComponent> result = spreadComponentService.add(spreadComponent);
         return Response.ok(DtoHelper.toDto(result.getItem())).build();
     }
 
@@ -47,17 +41,17 @@ public class ReadingController {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") int id, ReadingDto meaningDto) {
-        if (meaningDto.getId() != id) {
+    public Response update(@PathParam("id") int id, SpreadComponentDto SpreadComponentDto) {
+        if (SpreadComponentDto.getId() != id) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .header("Error", "The meaning id does not match the resource path")
+                    .header("Error", "The spreadComponent id does not match the resource path")
                     .build();
         }
 
-        final Result<Reading> resultReading = meaningService.fetch(id);
+        final Result<SpreadComponent> resultSpreadComponent = spreadComponentService.fetch(id);
 
-        if (!resultReading.empty()) {
-            final Result<Reading> result = meaningService.update(meaningDto);
+        if (!resultSpreadComponent.empty()) {
+            final Result<SpreadComponent> result = spreadComponentService.update(SpreadComponentDto);
             return Response.ok(DtoHelper.toDto(result.getItem())).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -69,18 +63,18 @@ public class ReadingController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response patch(@PathParam("id") final int id, final JsonPatch document) {
-        final Result<Reading> resultReading = meaningService.fetch(id);
+        final Result<SpreadComponent> resultSpreadComponent = spreadComponentService.fetch(id);
 
-        if (!resultReading.empty()) {
-            final Reading meaningInstance = resultReading.getItem();
+        if (!resultSpreadComponent.empty()) {
+            final SpreadComponent spreadComponentInstance = resultSpreadComponent.getItem();
             final ObjectMapper objectMapper = new ObjectMapper();
             try {
                 if (document == null) {
                     throw new IllegalArgumentException("Json patch document is null!");
                 }
 
-                final ReadingDto meaningDtoInstance = DtoHelper.toDto(meaningInstance);
-                final String json = objectMapper.writeValueAsString(meaningDtoInstance);
+                final SpreadComponentDto SpreadComponentDtoInstance = DtoHelper.toDto(spreadComponentInstance);
+                final String json = objectMapper.writeValueAsString(SpreadComponentDtoInstance);
 
                 //https://stackoverflow.com/questions/3653996/how-to-parse-a-json-string-into-jsonnode-in-jackson
                 final JsonNode jsonNode = objectMapper.readTree(json);
@@ -89,9 +83,9 @@ public class ReadingController {
                 final JsonNode appliedJsonNode = document.apply(jsonNode);
 
                 //https://stackoverflow.com/questions/19711695/convert-jsonnode-into-pojo
-                final ReadingDto meaningDto = objectMapper.treeToValue(appliedJsonNode, ReadingDto.class);
+                final SpreadComponentDto SpreadComponentDto = objectMapper.treeToValue(appliedJsonNode, SpreadComponentDto.class);
 
-                final Result<Reading> result = meaningService.update(meaningDto);
+                final Result<SpreadComponent> result = spreadComponentService.update(SpreadComponentDto);
 
                 return Response.ok(DtoHelper.toDto(result.getItem())).build();
 
@@ -110,10 +104,10 @@ public class ReadingController {
         //https://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
         //http://allegro.tech/2014/10/async-rest.html
 
-        final Result<Reading> resultReading = meaningService.fetch(id);
+        final Result<SpreadComponent> resultSpreadComponent = spreadComponentService.fetch(id);
 
-        if (!resultReading.empty()) {
-            final Result<Boolean> result = meaningService.delete(id);
+        if (!resultSpreadComponent.empty()) {
+            final Result<Boolean> result = spreadComponentService.delete(id);
             if (result.getItem()) {
                 return Response.noContent().build();
             } else {
@@ -127,20 +121,18 @@ public class ReadingController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response get() {
-        final Result<List<Reading>> result = meaningService.list();
-        final List<ReadingDto> readings = result.getItem().stream()
+        final Result<List<SpreadComponent>> result = spreadComponentService.list();
+        final List<SpreadComponentDto> categories = result.getItem().stream()
                 .map(DtoHelper::toDto)
                 .collect(Collectors.toList());
-        return Response.ok(readings).build();
+        return Response.ok(categories).build();
     }
 
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response get(@PathParam("id") int id) {
-        final Result<Reading> result = meaningService.fetch(id);
+        final Result<SpreadComponent> result = spreadComponentService.fetch(id);
         return Response.ok(DtoHelper.toDto(result.getItem())).build();
     }
-
-
 }

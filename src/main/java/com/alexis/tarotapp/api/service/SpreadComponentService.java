@@ -1,10 +1,10 @@
 package com.alexis.tarotapp.api.service;
 
-import com.alexis.tarotapp.api.dto.CategoryDto;
-import com.alexis.tarotapp.api.entities.Category;
+import com.alexis.tarotapp.api.dto.SpreadComponentDto;
+import com.alexis.tarotapp.api.entities.SpreadComponent;
 import com.alexis.tarotapp.api.entities.helper.EntityHelper;
 import com.alexis.tarotapp.api.general.result.Result;
-import com.alexis.tarotapp.api.repository.ICategoryDao;
+import com.alexis.tarotapp.api.repository.ISpreadComponentDao;
 import com.alexis.tarotapp.api.repository.hibernate.SessionUtil;
 import com.alexis.tarotapp.api.unitofwork.HIbernateUnitOfWork;
 import com.alexis.tarotapp.api.unitofwork.IUnitOfWork;
@@ -12,35 +12,34 @@ import org.hibernate.Session;
 
 import java.util.List;
 
-public class CategoryService implements ICategoryService {
+public class SpreadComponentService implements ISpreadComponentService {
+    private final ISpreadComponentDao spreadComponentDao;
 
-    private final ICategoryDao categoryDao;
-
-    public CategoryService(ICategoryDao categoryDao) {
-        this.categoryDao = categoryDao;
+    public SpreadComponentService(ISpreadComponentDao spreadComponentDao) {
+        this.spreadComponentDao = spreadComponentDao;
     }
 
     @Override
-    public Result<Category> add(CategoryDto categoryDto) {
+    public Result<SpreadComponent> add(SpreadComponentDto spreadComponentDto) {
         final Session session = SessionUtil.getSession();
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
-        final Category category = EntityHelper.toEntity(session, categoryDto);
-        final Result<Category> result = categoryDao.add(session, category);
+        final SpreadComponent spreadComponent = EntityHelper.toEntity(session, spreadComponentDto);
+        final Result<SpreadComponent> result = spreadComponentDao.add(session, spreadComponent);
         unitOfWork.commit();
 
         return result;
     }
 
     @Override
-    public Result<Category> update(CategoryDto categoryDto) {
+    public Result<SpreadComponent> update(SpreadComponentDto spreadComponentDto) {
         final Session session = SessionUtil.getSession();
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
-        final Category category = EntityHelper.toEntity(session, categoryDto);
-        final Result<Category> result = categoryDao.update(session, category);
+        final SpreadComponent spreadComponent = EntityHelper.toEntity(session, spreadComponentDto);
+        final Result<SpreadComponent> result = spreadComponentDao.update(session, spreadComponent);
         unitOfWork.commit();
 
         return result;
@@ -52,31 +51,31 @@ public class CategoryService implements ICategoryService {
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
-        final Result<Boolean> result = categoryDao.delete(session, id);
+        final Result<Boolean> result = spreadComponentDao.delete(session, id);
         unitOfWork.commit();
 
         return result;
     }
 
     @Override
-    public Result<List<Category>> list() {
+    public Result<List<SpreadComponent>> list() {
         final Session session = SessionUtil.getSession();
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
-        final Result<List<Category>> result = categoryDao.list(session);
+        final Result<List<SpreadComponent>> result = spreadComponentDao.list(session);
         unitOfWork.commit();
 
         return result;
     }
 
     @Override
-    public Result<Category> fetch(int id) {
+    public Result<SpreadComponent> fetch(int id) {
         final Session session = SessionUtil.getSession();
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
-        final Result<Category> result = categoryDao.fetch(session, id);
+        final Result<SpreadComponent> result = spreadComponentDao.fetch(session, id);
         unitOfWork.commit();
 
         return result;

@@ -1,10 +1,10 @@
 package com.alexis.tarotapp.api.service;
 
-import com.alexis.tarotapp.api.dto.CategoryDto;
-import com.alexis.tarotapp.api.entities.Category;
+import com.alexis.tarotapp.api.dto.SpreadDto;
+import com.alexis.tarotapp.api.entities.Spread;
 import com.alexis.tarotapp.api.entities.helper.EntityHelper;
 import com.alexis.tarotapp.api.general.result.Result;
-import com.alexis.tarotapp.api.repository.ICategoryDao;
+import com.alexis.tarotapp.api.repository.ISpreadDao;
 import com.alexis.tarotapp.api.repository.hibernate.SessionUtil;
 import com.alexis.tarotapp.api.unitofwork.HIbernateUnitOfWork;
 import com.alexis.tarotapp.api.unitofwork.IUnitOfWork;
@@ -12,35 +12,35 @@ import org.hibernate.Session;
 
 import java.util.List;
 
-public class CategoryService implements ICategoryService {
+public class SpreadService implements ISpreadService {
 
-    private final ICategoryDao categoryDao;
+    private final ISpreadDao spreadDao;
 
-    public CategoryService(ICategoryDao categoryDao) {
-        this.categoryDao = categoryDao;
+    public SpreadService(ISpreadDao spreadDao) {
+        this.spreadDao = spreadDao;
     }
 
     @Override
-    public Result<Category> add(CategoryDto categoryDto) {
+    public Result<Spread> add(SpreadDto cardDto) {
         final Session session = SessionUtil.getSession();
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
-        final Category category = EntityHelper.toEntity(session, categoryDto);
-        final Result<Category> result = categoryDao.add(session, category);
+        final Spread card = EntityHelper.toEntity(session, cardDto);
+        final Result<Spread> result = spreadDao.add(session, card);
         unitOfWork.commit();
 
         return result;
     }
 
     @Override
-    public Result<Category> update(CategoryDto categoryDto) {
+    public Result<Spread> update(SpreadDto cardDto) {
         final Session session = SessionUtil.getSession();
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
-        final Category category = EntityHelper.toEntity(session, categoryDto);
-        final Result<Category> result = categoryDao.update(session, category);
+        final Spread spread = EntityHelper.toEntity(session, cardDto);
+        final Result<Spread> result = spreadDao.update(session, spread);
         unitOfWork.commit();
 
         return result;
@@ -52,31 +52,31 @@ public class CategoryService implements ICategoryService {
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
-        final Result<Boolean> result = categoryDao.delete(session, id);
+        final Result<Boolean> result = spreadDao.delete(session, id);
         unitOfWork.commit();
 
         return result;
     }
 
     @Override
-    public Result<List<Category>> list() {
+    public Result<List<Spread>> list() {
         final Session session = SessionUtil.getSession();
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
-        final Result<List<Category>> result = categoryDao.list(session);
+        final Result<List<Spread>> result = spreadDao.list(session);
         unitOfWork.commit();
 
         return result;
     }
 
     @Override
-    public Result<Category> fetch(int id) {
+    public Result<Spread> fetch(int id) {
         final Session session = SessionUtil.getSession();
         final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
         unitOfWork.start();
-        final Result<Category> result = categoryDao.fetch(session, id);
+        final Result<Spread> result = spreadDao.fetch(session, id);
         unitOfWork.commit();
 
         return result;

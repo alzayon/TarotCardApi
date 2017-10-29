@@ -1,13 +1,7 @@
 package com.alexis.tarotapp.api;
 
-import com.alexis.tarotapp.api.repository.CardDao;
-import com.alexis.tarotapp.api.repository.CategoryDao;
-import com.alexis.tarotapp.api.repository.ICardDao;
-import com.alexis.tarotapp.api.repository.ICategoryDao;
-import com.alexis.tarotapp.api.service.CardService;
-import com.alexis.tarotapp.api.service.CategoryService;
-import com.alexis.tarotapp.api.service.ICardService;
-import com.alexis.tarotapp.api.service.ICategoryService;
+import com.alexis.tarotapp.api.repository.*;
+import com.alexis.tarotapp.api.service.*;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -32,9 +26,24 @@ public class Main {
         // in com.alexis.tarotapp.api package
         final ICardDao cardDao = new CardDao();
         final ICategoryDao categoryDao = new CategoryDao();
+        final IMeaningDao meaningDao = new MeaningDao();
+        final ISpreadDao spreadDao = new SpreadDao();
+        final ISpreadComponentDao spreadComponentDao = new SpreadComponentDao();
+        final IReadingDao readingDao = new ReadingDao();
+
         final ICardService cardService = new CardService(cardDao);
         final ICategoryService categoryService = new CategoryService(categoryDao);
-        final ResourceConfig rc = new TarotApplicationResourceConfig(cardService, categoryService);
+        final IMeaningService meaningService = new MeaningService(meaningDao);
+        final ISpreadService spreadService = new SpreadService(spreadDao);
+        final ISpreadComponentService spreadComponentService = new SpreadComponentService(spreadComponentDao);
+        final IReadingService readingService = new ReadingService(readingDao);
+
+        final ResourceConfig rc = new TarotApplicationResourceConfig(cardService,
+                categoryService,
+                meaningService,
+                spreadService,
+                spreadComponentService,
+                readingService);
 
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI

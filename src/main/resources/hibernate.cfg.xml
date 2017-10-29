@@ -29,6 +29,9 @@
         <mapping class="com.alexis.tarotapp.api.entities.Card"/>
         <mapping class="com.alexis.tarotapp.api.entities.Meaning"/>
         <mapping class="com.alexis.tarotapp.api.entities.Category"/>
+        <mapping class="com.alexis.tarotapp.api.entities.Reading"/>
+        <mapping class="com.alexis.tarotapp.api.entities.Spread"/>
+        <!-- <mapping class="com.alexis.tarotapp.api.entities.SpreadComponent"/> -->
 
     </session-factory>
 </hibernate-configuration>
