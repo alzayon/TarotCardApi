@@ -38,6 +38,11 @@ public final class DtoHelper {
                 toDto(spreadComponent.getSpread()));
     }
 
+    public static ReadingSessionDto toDto(ReadingSession readingSession) {
+        return new ReadingSessionDto(readingSession.getId(),
+                readingSession.getDescription());
+    }
+
     public static ReadingDto toDto(Reading reading) {
         return new ReadingDto(reading.getId(),
                 toDto(reading.getMeaning()),

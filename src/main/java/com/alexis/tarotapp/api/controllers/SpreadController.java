@@ -35,9 +35,9 @@ public class SpreadController {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response add(SpreadDto SpreadDto) {
+    public Response add(SpreadDto spreadDto) {
         //https://stackoverflow.com/questions/23858488/how-i-return-http-404-json-xml-response-in-jax-rs-jersey-on-tomcat
-        final Result<Spread> result = spreadService.add(SpreadDto);
+        final Result<Spread> result = spreadService.add(spreadDto);
         return Response.ok(DtoHelper.toDto(result.getItem())).build();
     }
 
@@ -45,8 +45,8 @@ public class SpreadController {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") final int id, final SpreadDto SpreadDto) {
-        if (SpreadDto.getId() != id) {
+    public Response update(@PathParam("id") final int id, final SpreadDto spreadDto) {
+        if (spreadDto.getId() != id) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .header("Error", "The spread id does not match the resource path")
                     .build();
@@ -55,7 +55,7 @@ public class SpreadController {
         final Result<Spread> resultSpread = spreadService.fetch(id);
 
         if (!resultSpread.empty()) {
-            final Result<Spread> result = spreadService.update(SpreadDto);
+            final Result<Spread> result = spreadService.update(spreadDto);
             return Response.ok(DtoHelper.toDto(result.getItem())).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();

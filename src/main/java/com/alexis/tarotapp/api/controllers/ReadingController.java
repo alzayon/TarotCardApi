@@ -6,7 +6,6 @@ import com.alexis.tarotapp.api.entities.Reading;
 import com.alexis.tarotapp.api.general.patch.PATCH;
 import com.alexis.tarotapp.api.general.result.Result;
 import com.alexis.tarotapp.api.service.IReadingService;
-import com.alexis.tarotapp.api.service.IReadingService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
@@ -18,7 +17,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,14 +30,14 @@ public class ReadingController {
     Request request;
 
     @Context
-    IReadingService meaningService;
+    IReadingService readingService;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response add(ReadingDto meaning) {
+    public Response add(ReadingDto readingDto) {
         //https://stackoverflow.com/questions/23858488/how-i-return-http-404-json-xml-response-in-jax-rs-jersey-on-tomcat
-        final Result<Reading> result = meaningService.add(meaning);
+        final Result<Reading> result = readingService.add(readingDto);
         return Response.ok(DtoHelper.toDto(result.getItem())).build();
     }
 
@@ -47,17 +45,17 @@ public class ReadingController {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") int id, ReadingDto meaningDto) {
-        if (meaningDto.getId() != id) {
+    public Response update(@PathParam("id") int id, ReadingDto readingDto) {
+        if (readingDto.getId() != id) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .header("Error", "The meaning id does not match the resource path")
+                    .header("Error", "The reading id does not match the resource path")
                     .build();
         }
 
-        final Result<Reading> resultReading = meaningService.fetch(id);
+        final Result<Reading> resultReading = readingService.fetch(id);
 
         if (!resultReading.empty()) {
-            final Result<Reading> result = meaningService.update(meaningDto);
+            final Result<Reading> result = readingService.update(readingDto);
             return Response.ok(DtoHelper.toDto(result.getItem())).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -69,18 +67,18 @@ public class ReadingController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response patch(@PathParam("id") final int id, final JsonPatch document) {
-        final Result<Reading> resultReading = meaningService.fetch(id);
+        final Result<Reading> resultReading = readingService.fetch(id);
 
         if (!resultReading.empty()) {
-            final Reading meaningInstance = resultReading.getItem();
+            final Reading readingInstance = resultReading.getItem();
             final ObjectMapper objectMapper = new ObjectMapper();
             try {
                 if (document == null) {
                     throw new IllegalArgumentException("Json patch document is null!");
                 }
 
-                final ReadingDto meaningDtoInstance = DtoHelper.toDto(meaningInstance);
-                final String json = objectMapper.writeValueAsString(meaningDtoInstance);
+                final ReadingDto readingDtoInstance = DtoHelper.toDto(readingInstance);
+                final String json = objectMapper.writeValueAsString(readingDtoInstance);
 
                 //https://stackoverflow.com/questions/3653996/how-to-parse-a-json-string-into-jsonnode-in-jackson
                 final JsonNode jsonNode = objectMapper.readTree(json);
@@ -89,9 +87,9 @@ public class ReadingController {
                 final JsonNode appliedJsonNode = document.apply(jsonNode);
 
                 //https://stackoverflow.com/questions/19711695/convert-jsonnode-into-pojo
-                final ReadingDto meaningDto = objectMapper.treeToValue(appliedJsonNode, ReadingDto.class);
+                final ReadingDto readingDto = objectMapper.treeToValue(appliedJsonNode, ReadingDto.class);
 
-                final Result<Reading> result = meaningService.update(meaningDto);
+                final Result<Reading> result = readingService.update(readingDto);
 
                 return Response.ok(DtoHelper.toDto(result.getItem())).build();
 
@@ -110,10 +108,10 @@ public class ReadingController {
         //https://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
         //http://allegro.tech/2014/10/async-rest.html
 
-        final Result<Reading> resultReading = meaningService.fetch(id);
+        final Result<Reading> resultReading = readingService.fetch(id);
 
         if (!resultReading.empty()) {
-            final Result<Boolean> result = meaningService.delete(id);
+            final Result<Boolean> result = readingService.delete(id);
             if (result.getItem()) {
                 return Response.noContent().build();
             } else {
@@ -127,7 +125,7 @@ public class ReadingController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response get() {
-        final Result<List<Reading>> result = meaningService.list();
+        final Result<List<Reading>> result = readingService.list();
         final List<ReadingDto> readings = result.getItem().stream()
                 .map(DtoHelper::toDto)
                 .collect(Collectors.toList());
@@ -138,7 +136,7 @@ public class ReadingController {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response get(@PathParam("id") int id) {
-        final Result<Reading> result = meaningService.fetch(id);
+        final Result<Reading> result = readingService.fetch(id);
         return Response.ok(DtoHelper.toDto(result.getItem())).build();
     }
 

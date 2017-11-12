@@ -1,10 +1,8 @@
 package com.alexis.tarotapp.api;
 
-import com.alexis.tarotapp.api.general.provider.JsonMappingExceptionMapper;
 import com.alexis.tarotapp.api.service.*;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -26,15 +24,13 @@ public class TarotApplicationResourceConfig extends ResourceConfig {
         //https://stackoverflow.com/questions/2332515/how-to-get-jersey-logs-at-server
         //https://groups.google.com/forum/#!topic/dropwizard-user/ILk5XGmXpPA
         register(new LoggingFeature(Logger.getLogger(LoggingFeature.DEFAULT_LOGGER_NAME),
-                Level.INFO, LoggingFeature.Verbosity.PAYLOAD_ANY,
-                Integer.MAX_VALUE));
+                Level.INFO,
+                LoggingFeature.Verbosity.PAYLOAD_ANY,
+                1000)); //https://stackoverflow.com/questions/42037644/jersey-2-x-throws-negativearraysizeexception-when-try-to-logging-request-for-no
 
         final JacksonJsonProvider jsonProvider = new JacksonJsonProvider();
-        //https://stackoverflow.com/questions/28231323/jersey-jackson-how-to-catch-json-mapping-exception
-        final JsonMappingExceptionMapper jsonMappingExceptionMapper = new JsonMappingExceptionMapper();
-
         register(jsonProvider);
-        register(jsonMappingExceptionMapper);
+
 
         register(new AbstractBinder() {
             @Override

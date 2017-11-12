@@ -1,20 +1,17 @@
 package com.alexis.tarotapp.api.controllers;
 
-import com.alexis.tarotapp.api.dto.MeaningDto;
+import com.alexis.tarotapp.api.dto.ReadingSessionDto;
 import com.alexis.tarotapp.api.dto.helper.DtoHelper;
-import com.alexis.tarotapp.api.entities.Meaning;
+import com.alexis.tarotapp.api.entities.ReadingSession;
 import com.alexis.tarotapp.api.general.patch.PATCH;
 import com.alexis.tarotapp.api.general.result.Result;
-import com.alexis.tarotapp.api.service.IMeaningService;
+import com.alexis.tarotapp.api.service.IReadingSessionService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
-import org.glassfish.jersey.server.ManagedAsync;
 
 import javax.ws.rs.*;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
@@ -24,22 +21,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by alzayon on 8/9/2017.
+ *
  */
-@Path("meaningresource")
-public class MeaningController {
+@Path("readingsessionresource")
+public class ReadingSessionController {
     @Context
     Request request;
 
     @Context
-    IMeaningService meaningService;
+    IReadingSessionService readingSessionService;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response add(MeaningDto meaningDto) {
+    public Response add(ReadingSessionDto readingSessionDto) {
         //https://stackoverflow.com/questions/23858488/how-i-return-http-404-json-xml-response-in-jax-rs-jersey-on-tomcat
-        final Result<Meaning> result = meaningService.add(meaningDto);
+        final Result<ReadingSession> result = readingSessionService.add(readingSessionDto);
         return Response.ok(DtoHelper.toDto(result.getItem())).build();
     }
 
@@ -47,17 +44,17 @@ public class MeaningController {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") int id, MeaningDto meaningDto) {
-        if (meaningDto.getId() != id) {
+    public Response update(@PathParam("id") final int id, final ReadingSessionDto ReadingSessionDto) {
+        if (ReadingSessionDto.getId() != id) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .header("Error", "The meaning id does not match the resource path")
+                    .header("Error", "The spread id does not match the resource path")
                     .build();
         }
 
-        final Result<Meaning> resultMeaning = meaningService.fetch(id);
+        final Result<ReadingSession> resultReadingSession = readingSessionService.fetch(id);
 
-        if (!resultMeaning.empty()) {
-            final Result<Meaning> result = meaningService.update(meaningDto);
+        if (!resultReadingSession.empty()) {
+            final Result<ReadingSession> result = readingSessionService.update(ReadingSessionDto);
             return Response.ok(DtoHelper.toDto(result.getItem())).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -69,18 +66,17 @@ public class MeaningController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response patch(@PathParam("id") final int id, final JsonPatch document) {
-        final Result<Meaning> resultMeaning = meaningService.fetch(id);
+        final Result<ReadingSession> resultReadingSession = readingSessionService.fetch(id);
 
-        if (!resultMeaning.empty()) {
-            final Meaning meaningInstance = resultMeaning.getItem();
+        if (!resultReadingSession.empty()) {
+            final ReadingSession spreadInstance = resultReadingSession.getItem();
             final ObjectMapper objectMapper = new ObjectMapper();
             try {
                 if (document == null) {
                     throw new IllegalArgumentException("Json patch document is null!");
                 }
 
-                final MeaningDto meaningDtoInstance = DtoHelper.toDto(meaningInstance);
-                final String json = objectMapper.writeValueAsString(meaningDtoInstance);
+                final String json = objectMapper.writeValueAsString(spreadInstance);
 
                 //https://stackoverflow.com/questions/3653996/how-to-parse-a-json-string-into-jsonnode-in-jackson
                 final JsonNode jsonNode = objectMapper.readTree(json);
@@ -89,9 +85,9 @@ public class MeaningController {
                 final JsonNode appliedJsonNode = document.apply(jsonNode);
 
                 //https://stackoverflow.com/questions/19711695/convert-jsonnode-into-pojo
-                final MeaningDto meaningDto = objectMapper.treeToValue(appliedJsonNode, MeaningDto.class);
+                final ReadingSessionDto ReadingSessionDto = objectMapper.treeToValue(appliedJsonNode, ReadingSessionDto.class);
 
-                final Result<Meaning> result = meaningService.update(meaningDto);
+                final Result<ReadingSession> result = readingSessionService.update(ReadingSessionDto);
 
                 return Response.ok(DtoHelper.toDto(result.getItem())).build();
 
@@ -105,15 +101,13 @@ public class MeaningController {
 
     @DELETE
     @Path("{id}")
-    public Response delete(@PathParam("id") int id) {
-
+    public Response delete(@PathParam("id") final int id) {
         //https://stackoverflow.com/questions/2342579/http-status-code-for-update-and-delete
         //http://allegro.tech/2014/10/async-rest.html
+        final Result<ReadingSession> resultReadingSession = readingSessionService.fetch(id);
 
-        final Result<Meaning> resultMeaning = meaningService.fetch(id);
-
-        if (!resultMeaning.empty()) {
-            final Result<Boolean> result = meaningService.delete(id);
+        if (!resultReadingSession.empty()) {
+            final Result<Boolean> result = readingSessionService.delete(id);
             if (result.getItem()) {
                 return Response.noContent().build();
             } else {
@@ -127,18 +121,18 @@ public class MeaningController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response get() {
-        final Result<List<Meaning>> result = meaningService.list();
-        final List<MeaningDto> meanings = result.getItem().stream()
+        final Result<List<ReadingSession>> result = readingSessionService.list();
+        final List<ReadingSessionDto> spreads = result.getItem().stream()
                 .map(DtoHelper::toDto)
                 .collect(Collectors.toList());
-        return Response.ok(meanings).build();
+        return Response.ok(spreads).build();
     }
 
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response get(@PathParam("id") int id) {
-        final Result<Meaning> result = meaningService.fetch(id);
+        final Result<ReadingSession> result = readingSessionService.fetch(id);
         return Response.ok(DtoHelper.toDto(result.getItem())).build();
     }
 }

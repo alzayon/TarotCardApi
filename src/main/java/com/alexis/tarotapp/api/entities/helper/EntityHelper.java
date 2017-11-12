@@ -47,6 +47,12 @@ public class EntityHelper {
         return spreadComponent;
     }
 
+    public static ReadingSession toEntity(Session session, ReadingSessionDto readingSessionDto) {
+        final ReadingSession readingSession = new ReadingSession(readingSessionDto.getId(),
+                readingSessionDto.getDescription());
+        return readingSession;
+    }
+
     public static Reading toEntity(Session session, ReadingDto readingDto) {
         final Meaning meaning = toEntity(session, readingDto.getMeaning());
         final SpreadComponent spreadComponent = (SpreadComponent) session.get(SpreadComponent.class,
