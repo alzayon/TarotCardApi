@@ -47,7 +47,7 @@ public class ReadingSessionController {
     public Response update(@PathParam("id") final int id, final ReadingSessionDto ReadingSessionDto) {
         if (ReadingSessionDto.getId() != id) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .header("Error", "The spread id does not match the resource path")
+                    .header("Error", "The reading session id does not match the resource path")
                     .build();
         }
 
@@ -69,14 +69,14 @@ public class ReadingSessionController {
         final Result<ReadingSession> resultReadingSession = readingSessionService.fetch(id);
 
         if (!resultReadingSession.empty()) {
-            final ReadingSession spreadInstance = resultReadingSession.getItem();
+            final ReadingSession readingSessionInstance = resultReadingSession.getItem();
             final ObjectMapper objectMapper = new ObjectMapper();
             try {
                 if (document == null) {
                     throw new IllegalArgumentException("Json patch document is null!");
                 }
 
-                final String json = objectMapper.writeValueAsString(spreadInstance);
+                final String json = objectMapper.writeValueAsString(readingSessionInstance);
 
                 //https://stackoverflow.com/questions/3653996/how-to-parse-a-json-string-into-jsonnode-in-jackson
                 final JsonNode jsonNode = objectMapper.readTree(json);
@@ -122,10 +122,10 @@ public class ReadingSessionController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response get() {
         final Result<List<ReadingSession>> result = readingSessionService.list();
-        final List<ReadingSessionDto> spreads = result.getItem().stream()
+        final List<ReadingSessionDto> readingSessions = result.getItem().stream()
                 .map(DtoHelper::toDto)
                 .collect(Collectors.toList());
-        return Response.ok(spreads).build();
+        return Response.ok(readingSessions).build();
     }
 
     @GET

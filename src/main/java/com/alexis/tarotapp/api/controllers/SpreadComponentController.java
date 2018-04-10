@@ -122,10 +122,10 @@ public class SpreadComponentController {
     @Produces(MediaType.APPLICATION_JSON)
     public Response get() {
         final Result<List<SpreadComponent>> result = spreadComponentService.list();
-        final List<SpreadComponentDto> categories = result.getItem().stream()
+        final List<SpreadComponentDto> spreadComponents = result.getItem().stream()
                 .map(DtoHelper::toDto)
                 .collect(Collectors.toList());
-        return Response.ok(categories).build();
+        return Response.ok(spreadComponents).build();
     }
 
     @GET
