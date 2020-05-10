@@ -2,6 +2,8 @@ package com.alexis.tarotapp.api.repository;
 
 import com.alexis.tarotapp.api.entities.ReadingSession;
 import com.alexis.tarotapp.api.general.result.Result;
+import com.alexis.tarotapp.api.repository.listing.ReadingSessionListingResult;
+import com.alexis.tarotapp.api.repository.pagination.PaginationParams;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -33,10 +35,23 @@ public class ReadingSessionDao implements IReadingSessionDao {
     }
 
     @Override
-    public Result<List<ReadingSession>> list(Session session) {
-        final Query query = session.createQuery("from ReadingSession");
-        final List<ReadingSession> readingSessions = query.list();
-        return new Result<>(readingSessions);
+    public Result<ReadingSessionListingResult> list(Session session, PaginationParams paginationParams) {
+        try {
+            final Query query = session.createQuery("from ReadingSession");
+            query.setFirstResult(paginationParams.getStart());
+            query.setMaxResults(paginationParams.getLimit());
+
+            String countQ = "Select count (rs.id) from ReadingSession rs";
+            Query countQuery = session.createQuery(countQ);
+            Long countResults = (Long) countQuery.uniqueResult();
+
+            final List<ReadingSession> readings = query.list();
+            final ReadingSessionListingResult readingSessionListingResult = new ReadingSessionListingResult(countResults, readings);
+            return new Result<>(readingSessionListingResult);
+        } catch (HibernateException ex) {
+            final Result<ReadingSessionListingResult> result =  new Result<>(null, ex);
+            return result;
+        }
     }
 
     @Override

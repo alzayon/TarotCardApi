@@ -6,6 +6,8 @@ import com.alexis.tarotapp.api.entities.helper.EntityHelper;
 import com.alexis.tarotapp.api.general.result.Result;
 import com.alexis.tarotapp.api.repository.ISpreadComponentDao;
 import com.alexis.tarotapp.api.repository.hibernate.SessionUtil;
+import com.alexis.tarotapp.api.repository.listing.SpreadComponentListingResult;
+import com.alexis.tarotapp.api.repository.pagination.PaginationParams;
 import com.alexis.tarotapp.api.unitofwork.HIbernateUnitOfWork;
 import com.alexis.tarotapp.api.unitofwork.IUnitOfWork;
 import org.hibernate.Session;
@@ -58,13 +60,10 @@ public class SpreadComponentService implements ISpreadComponentService {
     }
 
     @Override
-    public Result<List<SpreadComponent>> list() {
+    public Result<SpreadComponentListingResult> list(PaginationParams paginationParams) {
         final Session session = SessionUtil.getSession();
-        final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
-        unitOfWork.start();
-        final Result<List<SpreadComponent>> result = spreadComponentDao.list(session);
-        unitOfWork.commit();
+        final Result<SpreadComponentListingResult> result = spreadComponentDao.list(session, paginationParams);
 
         return result;
     }

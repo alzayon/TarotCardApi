@@ -6,11 +6,11 @@ import com.alexis.tarotapp.api.entities.helper.EntityHelper;
 import com.alexis.tarotapp.api.general.result.Result;
 import com.alexis.tarotapp.api.repository.IReadingSessionDao;
 import com.alexis.tarotapp.api.repository.hibernate.SessionUtil;
+import com.alexis.tarotapp.api.repository.listing.ReadingSessionListingResult;
+import com.alexis.tarotapp.api.repository.pagination.PaginationParams;
 import com.alexis.tarotapp.api.unitofwork.HIbernateUnitOfWork;
 import com.alexis.tarotapp.api.unitofwork.IUnitOfWork;
 import org.hibernate.Session;
-
-import java.util.List;
 
 public class ReadingSessionService implements IReadingSessionService {
     private final IReadingSessionDao readingSessionDao;
@@ -58,13 +58,10 @@ public class ReadingSessionService implements IReadingSessionService {
     }
 
     @Override
-    public Result<List<ReadingSession>> list() {
+    public Result<ReadingSessionListingResult> list(PaginationParams paginationParams) {
         final Session session = SessionUtil.getSession();
-        final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
-        unitOfWork.start();
-        final Result<List<ReadingSession>> result = readingSessionDao.list(session);
-        unitOfWork.commit();
+        final Result<ReadingSessionListingResult> result = readingSessionDao.list(session, paginationParams);
 
         return result;
     }

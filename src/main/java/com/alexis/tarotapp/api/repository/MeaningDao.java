@@ -2,6 +2,9 @@ package com.alexis.tarotapp.api.repository;
 
 import com.alexis.tarotapp.api.entities.Meaning;
 import com.alexis.tarotapp.api.general.result.Result;
+import com.alexis.tarotapp.api.repository.listing.MeaningListingResult;
+import com.alexis.tarotapp.api.repository.pagination.PaginationParams;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -27,10 +30,23 @@ public class MeaningDao implements IMeaningDao {
     }
 
     @Override
-    public Result<List<Meaning>> list(Session session) {
-        final Query query = session.createQuery("from Meaning");
-        final List<Meaning> meanings = query.list();
-        return new Result<>(meanings);
+    public Result<MeaningListingResult> list(Session session, PaginationParams paginationParams) {
+        try {
+            final Query query = session.createQuery("from Meaning");
+            query.setFirstResult(paginationParams.getStart());
+            query.setMaxResults(paginationParams.getLimit());
+
+            String countQ = "Select count (m.id) from Meaning m";
+            Query countQuery = session.createQuery(countQ);
+            Long countResults = (Long) countQuery.uniqueResult();
+
+            final List<Meaning> meanings = query.list();
+            final MeaningListingResult meaningListingResult = new MeaningListingResult(countResults, meanings);
+            return new Result<>(meaningListingResult);
+        } catch (HibernateException ex) {
+            final Result<MeaningListingResult> result =  new Result<>(null, ex);
+            return result;
+        }
     }
 
     @Override

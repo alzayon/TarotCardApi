@@ -1,6 +1,5 @@
 package com.alexis.tarotapp.api.repository.hibernate;
 
-import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;

@@ -13,9 +13,9 @@
     <!-- https://stackoverflow.com/questions/6293052/hibernate-javax-naming-noinitialcontextexception-component-mapping-via-annotat -->
     <!-- <session-factory name="hibernateSessionFactory"> -->
     <session-factory>
-        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
         <property name="hibernate.connection.password">secretive</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/tarotapp</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/tarot_app?serverTimezone=UTC</property>
         <property name="hibernate.connection.username">root</property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
         <property name="hibernate.show_sql">true</property>
@@ -31,7 +31,7 @@
         <mapping class="com.alexis.tarotapp.api.entities.Category"/>
         <mapping class="com.alexis.tarotapp.api.entities.Reading"/>
         <mapping class="com.alexis.tarotapp.api.entities.Spread"/>
-        <!-- <mapping class="com.alexis.tarotapp.api.entities.SpreadComponent"/> -->
+        <mapping class="com.alexis.tarotapp.api.entities.SpreadComponent"/>
 
     </session-factory>
 </hibernate-configuration>

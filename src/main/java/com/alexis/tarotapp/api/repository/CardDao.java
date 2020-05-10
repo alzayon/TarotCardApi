@@ -2,6 +2,8 @@ package com.alexis.tarotapp.api.repository;
 
 import com.alexis.tarotapp.api.entities.Card;
 import com.alexis.tarotapp.api.general.result.Result;
+import com.alexis.tarotapp.api.repository.listing.CardListingResult;
+import com.alexis.tarotapp.api.repository.pagination.PaginationParams;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -38,10 +40,23 @@ public class CardDao implements ICardDao {
     }
 
     @Override
-    public Result<List<Card>> list(Session session) {
-        final Query query = session.createQuery("from Card");
-        final List<Card> cards = query.list();
-        return new Result<>(cards);
+    public Result<CardListingResult> list(Session session, PaginationParams paginationParams) {
+        try {
+            final Query query = session.createQuery("from Card");
+            query.setFirstResult(paginationParams.getStart());
+            query.setMaxResults(paginationParams.getLimit());
+
+            String countQ = "Select count (c.id) from Card c";
+            Query countQuery = session.createQuery(countQ);
+            Long countResults = (Long) countQuery.uniqueResult();
+
+            final List<Card> cards = query.list();
+            final CardListingResult cardListingResult = new CardListingResult(countResults, cards);
+            return new Result<>(cardListingResult);
+        } catch (HibernateException ex) {
+            final Result<CardListingResult> result =  new Result<>(null, ex);
+            return result;
+        }
     }
 
     @Override

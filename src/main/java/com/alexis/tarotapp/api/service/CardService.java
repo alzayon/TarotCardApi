@@ -6,11 +6,11 @@ import com.alexis.tarotapp.api.entities.helper.EntityHelper;
 import com.alexis.tarotapp.api.general.result.Result;
 import com.alexis.tarotapp.api.repository.ICardDao;
 import com.alexis.tarotapp.api.repository.hibernate.SessionUtil;
+import com.alexis.tarotapp.api.repository.listing.CardListingResult;
+import com.alexis.tarotapp.api.repository.pagination.PaginationParams;
 import com.alexis.tarotapp.api.unitofwork.HIbernateUnitOfWork;
 import com.alexis.tarotapp.api.unitofwork.IUnitOfWork;
 import org.hibernate.Session;
-
-import java.util.List;
 
 /**
  * Created by alzayon on 8/20/2017.
@@ -62,13 +62,10 @@ public class CardService implements ICardService {
     }
 
     @Override
-    public Result<List<Card>> list() {
+    public Result<CardListingResult> list(PaginationParams paginationParams) {
         final Session session = SessionUtil.getSession();
-        final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
-        unitOfWork.start();
-        final Result<List<Card>> result = cardDao.list(session);
-        unitOfWork.commit();
+        final Result<CardListingResult> result = cardDao.list(session, paginationParams);
 
         return result;
     }

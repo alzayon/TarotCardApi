@@ -2,19 +2,20 @@ package com.alexis.tarotapp.api.controllers;
 
 import com.alexis.tarotapp.api.dto.CategoryDto;
 import com.alexis.tarotapp.api.dto.helper.DtoHelper;
+import com.alexis.tarotapp.api.dto.listing.CategoryListingResultDto;
+import com.alexis.tarotapp.api.dto.pagination.PaginationDto;
 import com.alexis.tarotapp.api.entities.Category;
 import com.alexis.tarotapp.api.general.patch.PATCH;
 import com.alexis.tarotapp.api.general.result.Result;
+import com.alexis.tarotapp.api.repository.listing.CategoryListingResult;
+import com.alexis.tarotapp.api.repository.pagination.PaginationParams;
 import com.alexis.tarotapp.api.service.ICategoryService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
-import org.glassfish.jersey.server.ManagedAsync;
 
 import javax.ws.rs.*;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
@@ -126,12 +127,16 @@ public class CategoryController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get() {
-        final Result<List<Category>> result = categoryService.list();
-        final List<CategoryDto> categories = result.getItem().stream()
-                .map(DtoHelper::toDto)
-                .collect(Collectors.toList());
-        return Response.ok(categories).build();
+    public Response get(@BeanParam PaginationDto paginationDto) {
+        final Result<CategoryListingResult> result = categoryService.list(
+                new PaginationParams(paginationDto.start, paginationDto.limit)
+        );
+        if (result.getError().isPresent()) {
+            throw new RuntimeException("Error selecting records");
+        }
+
+        final CategoryListingResult categoryListingResult = result.getItem();
+        return Response.ok(DtoHelper.toDto(categoryListingResult)).build();
     }
 
     @GET

@@ -6,11 +6,11 @@ import com.alexis.tarotapp.api.entities.helper.EntityHelper;
 import com.alexis.tarotapp.api.general.result.Result;
 import com.alexis.tarotapp.api.repository.ICategoryDao;
 import com.alexis.tarotapp.api.repository.hibernate.SessionUtil;
+import com.alexis.tarotapp.api.repository.listing.CategoryListingResult;
+import com.alexis.tarotapp.api.repository.pagination.PaginationParams;
 import com.alexis.tarotapp.api.unitofwork.HIbernateUnitOfWork;
 import com.alexis.tarotapp.api.unitofwork.IUnitOfWork;
 import org.hibernate.Session;
-
-import java.util.List;
 
 public class CategoryService implements ICategoryService {
 
@@ -59,13 +59,10 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public Result<List<Category>> list() {
+    public Result<CategoryListingResult> list(PaginationParams paginationParams) {
         final Session session = SessionUtil.getSession();
-        final IUnitOfWork unitOfWork = new HIbernateUnitOfWork(session);
 
-        unitOfWork.start();
-        final Result<List<Category>> result = categoryDao.list(session);
-        unitOfWork.commit();
+        final Result<CategoryListingResult> result = categoryDao.list(session, paginationParams);
 
         return result;
     }

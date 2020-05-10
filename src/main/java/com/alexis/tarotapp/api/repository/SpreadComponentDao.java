@@ -2,6 +2,8 @@ package com.alexis.tarotapp.api.repository;
 
 import com.alexis.tarotapp.api.entities.SpreadComponent;
 import com.alexis.tarotapp.api.general.result.Result;
+import com.alexis.tarotapp.api.repository.listing.SpreadComponentListingResult;
+import com.alexis.tarotapp.api.repository.pagination.PaginationParams;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -33,10 +35,23 @@ public class SpreadComponentDao implements ISpreadComponentDao {
     }
 
     @Override
-    public Result<List<SpreadComponent>> list(Session session) {
-        final Query query = session.createQuery("from SpreadComponent");
-        final List<SpreadComponent> spreads = query.list();
-        return new Result<>(spreads);
+    public Result<SpreadComponentListingResult> list(Session session, PaginationParams paginationParams) {
+        try {
+            final Query query = session.createQuery("from SpreadComponent");
+            query.setFirstResult(paginationParams.getStart());
+            query.setMaxResults(paginationParams.getLimit());
+
+            String countQ = "Select count (sc.id) from SpreadComponent sc";
+            Query countQuery = session.createQuery(countQ);
+            Long countResults = (Long) countQuery.uniqueResult();
+
+            final List<SpreadComponent> spreadComponents = query.list();
+            final SpreadComponentListingResult spreadComponentsListingResult = new SpreadComponentListingResult(countResults, spreadComponents);
+            return new Result<>(spreadComponentsListingResult);
+        } catch (HibernateException ex) {
+            final Result<SpreadComponentListingResult> result =  new Result<>(null, ex);
+            return result;
+        }
     }
 
     @Override

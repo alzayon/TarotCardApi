@@ -28,6 +28,7 @@ public class Result<T> {
     }
 
     public Optional<Throwable> getError() {
-        return Optional.of(this.error);
+        final Optional<Throwable> opt = Optional.ofNullable(this.error);
+        return opt;
     }
 }

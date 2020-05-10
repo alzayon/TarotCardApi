@@ -2,6 +2,9 @@ package com.alexis.tarotapp.api.repository;
 
 import com.alexis.tarotapp.api.entities.Reading;
 import com.alexis.tarotapp.api.general.result.Result;
+import com.alexis.tarotapp.api.repository.listing.ReadingListingResult;
+import com.alexis.tarotapp.api.repository.pagination.PaginationParams;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -23,10 +26,26 @@ public class ReadingDao implements IReadingDao {
     }
 
     @Override
-    public Result<List<Reading>> list(Session session) {
-        final Query query = session.createQuery("from Reading");
-        final List<Reading> readings = query.list();
-        return new Result<>(readings);
+    public Result<ReadingListingResult> list(
+        Session session,
+        PaginationParams paginationParams
+    ) {
+        try {
+            final Query query = session.createQuery("from Reading");
+            query.setFirstResult(paginationParams.getStart());
+            query.setMaxResults(paginationParams.getLimit());
+
+            String countQ = "Select count (r.id) from Reading r";
+            Query countQuery = session.createQuery(countQ);
+            Long countResults = (Long) countQuery.uniqueResult();
+
+            final List<Reading> readings = query.list();
+            final ReadingListingResult readingListingResult = new ReadingListingResult(countResults, readings);
+            return new Result<>(readingListingResult);
+        } catch (HibernateException ex) {
+            final Result<ReadingListingResult> result =  new Result<>(null, ex);
+            return result;
+        }
     }
 
     @Override

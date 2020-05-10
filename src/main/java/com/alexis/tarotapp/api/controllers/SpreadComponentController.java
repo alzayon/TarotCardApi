@@ -2,9 +2,13 @@ package com.alexis.tarotapp.api.controllers;
 
 import com.alexis.tarotapp.api.dto.SpreadComponentDto;
 import com.alexis.tarotapp.api.dto.helper.DtoHelper;
+import com.alexis.tarotapp.api.dto.listing.SpreadComponentListingResultDto;
+import com.alexis.tarotapp.api.dto.pagination.PaginationDto;
 import com.alexis.tarotapp.api.entities.SpreadComponent;
 import com.alexis.tarotapp.api.general.patch.PATCH;
 import com.alexis.tarotapp.api.general.result.Result;
+import com.alexis.tarotapp.api.repository.listing.SpreadComponentListingResult;
+import com.alexis.tarotapp.api.repository.pagination.PaginationParams;
 import com.alexis.tarotapp.api.service.ISpreadComponentService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -120,12 +124,22 @@ public class SpreadComponentController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get() {
-        final Result<List<SpreadComponent>> result = spreadComponentService.list();
-        final List<SpreadComponentDto> spreadComponents = result.getItem().stream()
+    public Response get(@BeanParam PaginationDto paginationDto) {
+        final Result<SpreadComponentListingResult> result = spreadComponentService.list(
+                new PaginationParams(paginationDto.start, paginationDto.limit)
+        );
+        if (result.getError().isPresent()) {
+            throw new RuntimeException("Error selecting records");
+        }
+
+        final SpreadComponentListingResult spreadComponentListingResult = result.getItem();
+        final List<SpreadComponentDto> spreadComponent = spreadComponentListingResult.getListing().stream()
                 .map(DtoHelper::toDto)
                 .collect(Collectors.toList());
-        return Response.ok(spreadComponents).build();
+        final SpreadComponentListingResultDto spreadComponentSessionListingResultDto =
+                new SpreadComponentListingResultDto(spreadComponentListingResult.getCount(), spreadComponent);
+
+        return Response.ok(spreadComponentSessionListingResultDto).build();
     }
 
     @GET

@@ -1,7 +1,12 @@
 package com.alexis.tarotapp.api.dto.helper;
 
 import com.alexis.tarotapp.api.dto.*;
+import com.alexis.tarotapp.api.dto.listing.*;
 import com.alexis.tarotapp.api.entities.*;
+import com.alexis.tarotapp.api.repository.listing.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by alzayon on 8/20/2017.
@@ -48,5 +53,47 @@ public final class DtoHelper {
                 toDto(reading.getMeaning()),
                 toDto(reading.getSpreadComponent())
         );
+    }
+
+    public static CardListingResultDto toDto(CardListingResult cardListingResult) {
+        final List<CardDto> cards = cardListingResult.getListing().stream()
+                .map(DtoHelper::toDto)
+                .collect(Collectors.toList());
+        return new CardListingResultDto(cardListingResult.getCount(), cards);
+    }
+
+    public static CategoryListingResultDto toDto(CategoryListingResult categoryListingResult) {
+        final List<CategoryDto> categories = categoryListingResult.getListing().stream()
+                .map(DtoHelper::toDto)
+                .collect(Collectors.toList());
+        return new CategoryListingResultDto(categoryListingResult.getCount(), categories);
+    }
+
+    public static MeaningListingResultDto toDto(MeaningListingResult meaningListingResult) {
+        final List<MeaningDto> meanings = meaningListingResult.getListing().stream()
+                .map(DtoHelper::toDto)
+                .collect(Collectors.toList());
+        return new MeaningListingResultDto(meaningListingResult.getCount(), meanings);
+    }
+
+    public static ReadingListingResultDto toDto(ReadingListingResult readingListingResult) {
+        final List<ReadingDto> readings = readingListingResult.getListing().stream()
+                .map(DtoHelper::toDto)
+                .collect(Collectors.toList());
+        return new ReadingListingResultDto(readingListingResult.getCount(), readings);
+    }
+
+    public static ReadingSessionListingResultDto toDto(ReadingSessionListingResult readingSessionListingResult) {
+        final List<ReadingSessionDto> readingSessions = readingSessionListingResult.getListing().stream()
+                .map(DtoHelper::toDto)
+                .collect(Collectors.toList());
+        return new ReadingSessionListingResultDto(readingSessionListingResult.getCount(), readingSessions);
+    }
+
+    public static SpreadListingResultDto toDto(SpreadListingResult spreadListingResult) {
+        final List<SpreadDto> spreadSessions = spreadListingResult.getListing().stream()
+                .map(DtoHelper::toDto)
+                .collect(Collectors.toList());
+        return new SpreadListingResultDto(spreadListingResult.getCount(), spreadSessions);
     }
 }

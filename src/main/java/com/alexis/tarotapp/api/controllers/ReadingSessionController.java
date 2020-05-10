@@ -2,9 +2,12 @@ package com.alexis.tarotapp.api.controllers;
 
 import com.alexis.tarotapp.api.dto.ReadingSessionDto;
 import com.alexis.tarotapp.api.dto.helper.DtoHelper;
+import com.alexis.tarotapp.api.dto.pagination.PaginationDto;
 import com.alexis.tarotapp.api.entities.ReadingSession;
 import com.alexis.tarotapp.api.general.patch.PATCH;
 import com.alexis.tarotapp.api.general.result.Result;
+import com.alexis.tarotapp.api.repository.listing.ReadingSessionListingResult;
+import com.alexis.tarotapp.api.repository.pagination.PaginationParams;
 import com.alexis.tarotapp.api.service.IReadingSessionService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,8 +20,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -85,7 +86,8 @@ public class ReadingSessionController {
                 final JsonNode appliedJsonNode = document.apply(jsonNode);
 
                 //https://stackoverflow.com/questions/19711695/convert-jsonnode-into-pojo
-                final ReadingSessionDto ReadingSessionDto = objectMapper.treeToValue(appliedJsonNode, ReadingSessionDto.class);
+                final ReadingSessionDto ReadingSessionDto =
+                        objectMapper.treeToValue(appliedJsonNode, ReadingSessionDto.class);
 
                 final Result<ReadingSession> result = readingSessionService.update(ReadingSessionDto);
 
@@ -120,12 +122,16 @@ public class ReadingSessionController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get() {
-        final Result<List<ReadingSession>> result = readingSessionService.list();
-        final List<ReadingSessionDto> readingSessions = result.getItem().stream()
-                .map(DtoHelper::toDto)
-                .collect(Collectors.toList());
-        return Response.ok(readingSessions).build();
+    public Response get(@BeanParam PaginationDto paginationDto) {
+        final Result<ReadingSessionListingResult> result = readingSessionService.list(
+                new PaginationParams(paginationDto.start, paginationDto.limit)
+        );
+        if (result.getError().isPresent()) {
+            throw new RuntimeException("Error selecting records");
+        }
+
+        final ReadingSessionListingResult readingListingResult = result.getItem();
+        return Response.ok(DtoHelper.toDto(readingListingResult)).build();
     }
 
     @GET

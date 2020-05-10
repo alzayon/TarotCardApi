@@ -2,6 +2,9 @@ package com.alexis.tarotapp.api.repository;
 
 import com.alexis.tarotapp.api.entities.Category;
 import com.alexis.tarotapp.api.general.result.Result;
+import com.alexis.tarotapp.api.repository.listing.CategoryListingResult;
+import com.alexis.tarotapp.api.repository.pagination.PaginationParams;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -28,10 +31,23 @@ public class CategoryDao implements ICategoryDao {
     }
 
     @Override
-    public Result<List<Category>> list(Session session) {
-        final Query query = session.createQuery("from Category");
-        final List<Category> categories = query.list();
-        return new Result<>(categories);
+    public Result<CategoryListingResult> list(Session session, PaginationParams paginationParams) {
+        try {
+            final Query query = session.createQuery("from Category");
+            query.setFirstResult(paginationParams.getStart());
+            query.setMaxResults(paginationParams.getLimit());
+
+            String countQ = "Select count (c.id) from Category c";
+            Query countQuery = session.createQuery(countQ);
+            Long countResults = (Long) countQuery.uniqueResult();
+
+            final List<Category> categories = query.list();
+            final CategoryListingResult categoryListingResult = new CategoryListingResult(countResults, categories);
+            return new Result<>(categoryListingResult);
+        } catch (HibernateException ex) {
+            final Result<CategoryListingResult> result =  new Result<>(null, ex);
+            return result;
+        }
     }
 
     @Override

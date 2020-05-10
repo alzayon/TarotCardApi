@@ -2,9 +2,12 @@ package com.alexis.tarotapp.api.controllers;
 
 import com.alexis.tarotapp.api.dto.CardDto;
 import com.alexis.tarotapp.api.dto.helper.DtoHelper;
+import com.alexis.tarotapp.api.dto.pagination.PaginationDto;
 import com.alexis.tarotapp.api.entities.Card;
 import com.alexis.tarotapp.api.general.patch.PATCH;
 import com.alexis.tarotapp.api.general.result.Result;
+import com.alexis.tarotapp.api.repository.listing.CardListingResult;
+import com.alexis.tarotapp.api.repository.pagination.PaginationParams;
 import com.alexis.tarotapp.api.service.ICardService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,8 +20,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by alzayon on 6/16/2017.
@@ -121,12 +122,16 @@ public class CardController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get() {
-        final Result<List<Card>> result = cardService.list();
-        final List<CardDto> cards = result.getItem().stream()
-                .map(DtoHelper::toDto)
-                .collect(Collectors.toList());
-        return Response.ok(cards).build();
+    public Response get(@BeanParam PaginationDto paginationDto) {
+        final Result<CardListingResult> result = cardService.list(
+                new PaginationParams(paginationDto.start, paginationDto.limit)
+        );
+        if (result.getError().isPresent()) {
+            throw new RuntimeException("Error selecting records");
+        }
+
+        final CardListingResult cardListingResult = result.getItem();
+        return Response.ok(DtoHelper.toDto(cardListingResult)).build();
     }
 
     @GET
