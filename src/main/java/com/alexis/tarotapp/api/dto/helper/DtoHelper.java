@@ -3,97 +3,78 @@ package com.alexis.tarotapp.api.dto.helper;
 import com.alexis.tarotapp.api.dto.*;
 import com.alexis.tarotapp.api.dto.listing.*;
 import com.alexis.tarotapp.api.entities.*;
+import com.alexis.tarotapp.api.mappers.*;
 import com.alexis.tarotapp.api.repository.listing.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by alzayon on 8/20/2017.
  */
 public final class DtoHelper {
-    private DtoHelper() {
 
+    private static ICardMapper cardMapper = new ICardMapperImpl();
+    private static ICategoryMapper categoryMapper = new ICategoryMapperImpl();
+    private static IMeaningMapper meaningMapper = new IMeaningMapperImpl();
+    private static IReadingMapper readingMapper = new IReadingMapperImpl();
+    private static IReadingSessionMapper readingSessionMapper = new IReadingSessionMapperImpl();
+    private static ISpreadComponentMapper spreadComponentMapper = new ISpreadComponentMapperImpl();
+    private static ISpreadMapper spreadMapper = new ISpreadMapperImpl();
+
+    private DtoHelper() {
     }
 
     public static CardDto toDto(Card card) {
-        return new CardDto(card.getId(), card.getName(), card.getType());
+        return cardMapper.entityToDto(card);
     }
 
     public static CategoryDto toDto(Category category) {
-        return new CategoryDto(category.getId(), category.getName());
+        return categoryMapper.entityToDto(category);
     }
 
     public static MeaningDto toDto(Meaning meaning) {
-        return new MeaningDto(meaning.getId(),
-                toDto(meaning.getCard()),
-                toDto(meaning.getCategory()),
-                meaning.getMeaningText());
-
+        return meaningMapper.entityToDto(meaning);
     }
 
     public static SpreadDto toDto(Spread spread) {
-        return new SpreadDto(spread.getId(),
-                spread.getName());
+        return spreadMapper.entityToDto(spread);
     }
 
     public static SpreadComponentDto toDto(SpreadComponent spreadComponent) {
-        return new SpreadComponentDto(spreadComponent.getId(),
-                spreadComponent.getPosition(),
-                toDto(spreadComponent.getSpread()));
+        return spreadComponentMapper.entityToDto(spreadComponent);
     }
 
     public static ReadingSessionDto toDto(ReadingSession readingSession) {
-        return new ReadingSessionDto(readingSession.getId(),
-                readingSession.getDescription());
+        return readingSessionMapper.entityToDto(readingSession);
     }
 
     public static ReadingDto toDto(Reading reading) {
-        return new ReadingDto(reading.getId(),
-                toDto(reading.getMeaning()),
-                toDto(reading.getSpreadComponent())
-        );
+        return readingMapper.entityToDto(reading);
     }
 
     public static CardListingResultDto toDto(CardListingResult cardListingResult) {
-        final List<CardDto> cards = cardListingResult.getListing().stream()
-                .map(DtoHelper::toDto)
-                .collect(Collectors.toList());
-        return new CardListingResultDto(cardListingResult.getCount(), cards);
+        return cardMapper.entityToDto(cardListingResult);
     }
 
     public static CategoryListingResultDto toDto(CategoryListingResult categoryListingResult) {
-        final List<CategoryDto> categories = categoryListingResult.getListing().stream()
-                .map(DtoHelper::toDto)
-                .collect(Collectors.toList());
-        return new CategoryListingResultDto(categoryListingResult.getCount(), categories);
+        return categoryMapper.entityToDto(categoryListingResult);
     }
 
     public static MeaningListingResultDto toDto(MeaningListingResult meaningListingResult) {
-        final List<MeaningDto> meanings = meaningListingResult.getListing().stream()
-                .map(DtoHelper::toDto)
-                .collect(Collectors.toList());
-        return new MeaningListingResultDto(meaningListingResult.getCount(), meanings);
+        return meaningMapper.entityToDto(meaningListingResult);
     }
 
     public static ReadingListingResultDto toDto(ReadingListingResult readingListingResult) {
-        final List<ReadingDto> readings = readingListingResult.getListing().stream()
-                .map(DtoHelper::toDto)
-                .collect(Collectors.toList());
-        return new ReadingListingResultDto(readingListingResult.getCount(), readings);
+        return readingMapper.entityToDto(readingListingResult);
     }
 
     public static ReadingSessionListingResultDto toDto(ReadingSessionListingResult readingSessionListingResult) {
-        final List<ReadingSessionDto> readingSessions = readingSessionListingResult.getListing().stream()
-                .map(DtoHelper::toDto)
-                .collect(Collectors.toList());
-        return new ReadingSessionListingResultDto(readingSessionListingResult.getCount(), readingSessions);
+        return readingSessionMapper.entityToDto(readingSessionListingResult);
+    }
+
+    public static SpreadComponentListingResultDto toDto(SpreadComponentListingResult spreadComponentListingResult) {
+        return spreadComponentMapper.entityToDto(spreadComponentListingResult);
     }
 
     public static SpreadListingResultDto toDto(SpreadListingResult spreadListingResult) {
-        final List<SpreadDto> spreadSessions = spreadListingResult.getListing().stream()
-                .map(DtoHelper::toDto)
-                .collect(Collectors.toList());
-        return new SpreadListingResultDto(spreadListingResult.getCount(), spreadSessions);
+        return spreadMapper.entityToDto(spreadListingResult);
     }
 }

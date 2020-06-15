@@ -5,8 +5,10 @@ package com.alexis.tarotapp.api.entities;
  */
 public class ReadingSession {
 
-    private final long id;
-    private final String description;
+    private long id;
+    private String description;
+
+    public ReadingSession() {}
 
     public ReadingSession(long id,
                           String description) {

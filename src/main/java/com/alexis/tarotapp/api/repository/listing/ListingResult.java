@@ -16,6 +16,6 @@ public abstract class ListingResult<T> {
     }
 
     public List<T> getListing() {
-        return listing;
+        return this.listing;
     }
 }

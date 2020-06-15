@@ -2,7 +2,6 @@ package com.alexis.tarotapp.api.controllers;
 
 import com.alexis.tarotapp.api.dto.SpreadDto;
 import com.alexis.tarotapp.api.dto.helper.DtoHelper;
-import com.alexis.tarotapp.api.dto.listing.SpreadListingResultDto;
 import com.alexis.tarotapp.api.dto.pagination.PaginationDto;
 import com.alexis.tarotapp.api.entities.Spread;
 import com.alexis.tarotapp.api.general.patch.PATCH;
@@ -21,8 +20,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by alzayon on 6/18/2017.

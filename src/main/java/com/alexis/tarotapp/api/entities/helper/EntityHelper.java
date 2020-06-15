@@ -2,55 +2,43 @@ package com.alexis.tarotapp.api.entities.helper;
 
 import com.alexis.tarotapp.api.dto.*;
 import com.alexis.tarotapp.api.entities.*;
+import com.alexis.tarotapp.api.mappers.*;
 import org.hibernate.Session;
 
 public class EntityHelper {
 
+    private static ICardMapper cardMapper = new ICardMapperImpl();
+    private static ICategoryMapper categoryMapper = new ICategoryMapperImpl();
+    private static IMeaningMapper meaningMapper = new IMeaningMapperImpl();
+    private static IReadingMapper readingMapper = new IReadingMapperImpl();
+    private static IReadingSessionMapper readingSessionMapper = new IReadingSessionMapperImpl();
+    private static ISpreadComponentMapper spreadComponentMapper = new ISpreadComponentMapperImpl();
+    private static ISpreadMapper spreadMapper = new ISpreadMapperImpl();
+
+
     public static Card toEntity(Session session, CardDto cardDto) {
-        final Card card = new Card(cardDto.getId(),
-                                    cardDto.getName(),
-                                cardDto.getType());
-        return card;
+        return cardMapper.dtoToEntity(session, cardDto);
     }
 
     public static Category toEntity(Session session, CategoryDto categoryDto) {
-        final Category category = new Category(categoryDto.getId(),
-                                               categoryDto.getName());
-        return category;
+        return categoryMapper.dtoToEntity(session, categoryDto);
     }
 
     public static Meaning toEntity(Session session, MeaningDto meaningDto) {
-        final Card card = (Card) session.get(Card.class,
-                                             meaningDto.getCard().getId());
-        final Category category = (Category) session.get(Category.class,
-                                                         meaningDto.getCategory().getId());
-        final Meaning meaning = new Meaning(meaningDto.getId(),
-                                            card,
-                                            category,
-                                            meaningDto.getMeaningText()
-        );
+        final Meaning meaning = meaningMapper.dtoToEntity(session, meaningDto);
         return meaning;
     }
 
     public static Spread toEntity(Session session, SpreadDto spreadDto) {
-        final Spread spread = new Spread(spreadDto.getId(),
-                spreadDto.getName());
-        return spread;
+        return spreadMapper.dtoToEntity(session, spreadDto);
     }
 
     public static SpreadComponent toEntity(Session session, SpreadComponentDto spreadComponentDto) {
-        final Spread spread = (Spread) session.get(Spread.class,
-                                                   spreadComponentDto.getSpread().getId());
-        final SpreadComponent spreadComponent = new SpreadComponent(spreadComponentDto.getId(),
-                spreadComponentDto.getPosition(),
-                spread);
-        return spreadComponent;
+        return spreadComponentMapper.dtoToEntity(session, spreadComponentDto);
     }
 
     public static ReadingSession toEntity(Session session, ReadingSessionDto readingSessionDto) {
-        final ReadingSession readingSession = new ReadingSession(readingSessionDto.getId(),
-                readingSessionDto.getDescription());
-        return readingSession;
+        return readingSessionMapper.dtoToEntity(session, readingSessionDto);
     }
 
     public static Reading toEntity(Session session, ReadingDto readingDto) {

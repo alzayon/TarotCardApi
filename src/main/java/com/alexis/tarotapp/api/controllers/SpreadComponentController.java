@@ -2,7 +2,6 @@ package com.alexis.tarotapp.api.controllers;
 
 import com.alexis.tarotapp.api.dto.SpreadComponentDto;
 import com.alexis.tarotapp.api.dto.helper.DtoHelper;
-import com.alexis.tarotapp.api.dto.listing.SpreadComponentListingResultDto;
 import com.alexis.tarotapp.api.dto.pagination.PaginationDto;
 import com.alexis.tarotapp.api.entities.SpreadComponent;
 import com.alexis.tarotapp.api.general.patch.PATCH;
@@ -21,8 +20,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Path("spreadcomponentresource")
 public class SpreadComponentController {
@@ -133,13 +130,7 @@ public class SpreadComponentController {
         }
 
         final SpreadComponentListingResult spreadComponentListingResult = result.getItem();
-        final List<SpreadComponentDto> spreadComponent = spreadComponentListingResult.getListing().stream()
-                .map(DtoHelper::toDto)
-                .collect(Collectors.toList());
-        final SpreadComponentListingResultDto spreadComponentSessionListingResultDto =
-                new SpreadComponentListingResultDto(spreadComponentListingResult.getCount(), spreadComponent);
-
-        return Response.ok(spreadComponentSessionListingResultDto).build();
+        return Response.ok(DtoHelper.toDto(spreadComponentListingResult)).build();
     }
 
     @GET

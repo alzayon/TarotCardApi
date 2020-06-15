@@ -1,5 +1,7 @@
 package com.alexis.tarotapp.api.repository;
 
+import com.alexis.tarotapp.api.dto.MeaningDto;
+import com.alexis.tarotapp.api.dto.helper.DtoHelper;
 import com.alexis.tarotapp.api.entities.Meaning;
 import com.alexis.tarotapp.api.general.result.Result;
 import com.alexis.tarotapp.api.repository.listing.MeaningListingResult;
@@ -7,9 +9,9 @@ import com.alexis.tarotapp.api.repository.pagination.PaginationParams;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by alzayon on 8/2/2017.
@@ -24,7 +26,7 @@ public class MeaningDao implements IMeaningDao {
 
     @Override
     public Result<Meaning> update(Session session, Meaning meaning) {
-        final Meaning reattachedMeaning = (Meaning)session.merge(meaning);
+        final Meaning reattachedMeaning = (Meaning) session.merge(meaning);
         session.save(reattachedMeaning);
         return new Result<>(reattachedMeaning);
     }
@@ -40,11 +42,13 @@ public class MeaningDao implements IMeaningDao {
             Query countQuery = session.createQuery(countQ);
             Long countResults = (Long) countQuery.uniqueResult();
 
-            final List<Meaning> meanings = query.list();
+            final List<Meaning> meanings =
+                    query.list();
+
             final MeaningListingResult meaningListingResult = new MeaningListingResult(countResults, meanings);
             return new Result<>(meaningListingResult);
         } catch (HibernateException ex) {
-            final Result<MeaningListingResult> result =  new Result<>(null, ex);
+            final Result<MeaningListingResult> result = new Result<>(null, ex);
             return result;
         }
     }

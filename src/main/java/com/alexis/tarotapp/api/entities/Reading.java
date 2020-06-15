@@ -9,17 +9,19 @@ public class Reading {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final long id;
+    private long id;
 
     //http://viralpatel.net/blogs/hibernate-one-to-many-annotation-tutorial/
     @ManyToOne
     @JoinColumn(name = "meaning_id")
-    private final Meaning meaning;
+    private Meaning meaning;
 
     //http://viralpatel.net/blogs/hibernate-one-to-many-annotation-tutorial/
     @ManyToOne
     @JoinColumn(name = "spread_component_id")
-    private final SpreadComponent spreadComponent;
+    private SpreadComponent spreadComponent;
+
+    public Reading() {}
 
     public Reading(long id, Meaning meaning, SpreadComponent spreadComponent) {
         this.id = id;
@@ -37,5 +39,17 @@ public class Reading {
 
     public SpreadComponent getSpreadComponent() {
         return spreadComponent;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setMeaning(Meaning meaning) {
+        this.meaning = meaning;
+    }
+
+    public void setSpreadComponent(SpreadComponent spreadComponent) {
+        this.spreadComponent = spreadComponent;
     }
 }

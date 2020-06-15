@@ -8,15 +8,16 @@ public class SpreadComponent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final long id;
+    private long id;
 
     @Column
-    private final int position;
+    private int position;
 
     @ManyToOne
     @JoinColumn(name = "spread_id")
-    private final Spread spread;
+    private Spread spread;
 
+    public SpreadComponent() {}
 
     public SpreadComponent(long id, int position, Spread spread) {
         this.id = id;
@@ -34,5 +35,17 @@ public class SpreadComponent {
 
     public Spread getSpread() {
         return spread;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public void setSpread(Spread spread) {
+        this.spread = spread;
     }
 }

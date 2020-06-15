@@ -6,8 +6,6 @@ import com.alexis.tarotapp.api.general.result.Result;
 import com.alexis.tarotapp.api.repository.listing.CategoryListingResult;
 import com.alexis.tarotapp.api.repository.pagination.PaginationParams;
 
-import java.util.List;
-
 public interface ICategoryService {
     Result<Category> add(CategoryDto categoryDto);
     Result<Category> update(CategoryDto categoryDto);
